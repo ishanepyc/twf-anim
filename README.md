@@ -1,5 +1,9 @@
 # twf-anim
 
+> **TEMPORARY.** This repo exists so the script does not depend on a developer
+> machine being awake while staging is shared with the client. Fold it into the
+> project's own hosting when that is decided, then delete this repo.
+
 Motion for The Working Files (listing + article) on seedtoscale.com.
 
 Served to the live pages over GitHub Pages so the script does not depend on any
