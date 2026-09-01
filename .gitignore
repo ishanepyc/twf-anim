@@ -1,0 +1,4 @@
+.devcert*/
+*.pem
+*.key
+node_modules/
