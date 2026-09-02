@@ -448,6 +448,53 @@
       } catch (e) {}
     }
   }
+
+  // ---- CTA hover -------------------------------------------------------
+  // Webflow has no way to express `.twf_cta:hover .arrow` as a class, so the
+  // hover lives here. It animates the ARROW only and never the <a>, so it can
+  // never fight the entrance tween that already owns the button. Bound once,
+  // scoped to our own wrapper, and it degrades to a plain transform if GSAP
+  // is missing.
+  (function ctaHover() {
+    var root = document.querySelector('.page-wrapper.is-twf-page');
+    if (!root) {
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', ctaHover, { once: true });
+      }
+      return;
+    }
+    if (root.__twfHoverBound) return;
+    root.__twfHoverBound = true;
+
+    var g = window.gsap;
+    Array.prototype.forEach.call(
+      root.querySelectorAll('.twf_cta, .twfa_hero-bar-cta'),
+      function (cta) {
+        var arrow = cta.querySelector('img, svg');
+        if (!arrow) return;
+        // A download arrow points down; every other arrow on these pages
+        // points up-right, so each one moves the way it is already aiming.
+        var down = /download/i.test(cta.textContent || '');
+        var dx = down ? 0 : 4;
+        var dy = down ? 5 : -4;
+        var move = function (x, y) {
+          if (g) {
+            g.to(arrow, { x: x, y: y, duration: 0.34, ease: 'power2.out',
+                          overwrite: 'auto' });
+          } else {
+            arrow.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+          }
+        };
+        var on  = function () { move(dx, dy); };
+        var off = function () { move(0, 0); };
+        cta.addEventListener('mouseenter', on);
+        cta.addEventListener('mouseleave', off);
+        cta.addEventListener('focus', on);
+        cta.addEventListener('blur', off);
+      }
+    );
+  })();
+
 })();
 
 /* ==== BEGIN twf-anim addition — session B — do not remove ==== */
