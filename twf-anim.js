@@ -64,6 +64,12 @@
     var RISE   = { yPercent: 40, opacity: 0 };
     var NUDGE  = { y: 24, opacity: 0 };
     var ZOOM   = { scale: 1.05, opacity: 0 };
+    // Scale the INNER image, never the media box. The box is the thing sized to
+    // the 1296 column and it is what the side rules line up against; scaling it
+    // pushed it ~15px past the column edge mid-entrance, unclipped by any
+    // ancestor. The box already has overflow:hidden, so zooming the image inside
+    // it gives the identical effect with nothing escaping the column.
+    var ZOOMI  = { scale: 1.05 };
     var FADE   = { opacity: 0 };
 
     var SCENES = [
@@ -86,7 +92,8 @@
         { sel: '.twf_strip-img',    at: 0,    dur: 0.9, from: ZOOM,  ease: 'power2.out' }
       ]},
       { host: '.twf_featured-grid', steps: [
-        { sel: '.twf_featured-media', at: 0,    dur: 0.9, from: ZOOM,  ease: 'power2.out' },
+        { sel: '.twf_featured-media', at: 0,    dur: 0.9, from: FADE,  ease: 'power2.out' },
+        { sel: '.twf_featured-img',   at: 0,    dur: 0.9, from: ZOOMI, ease: 'power2.out' },
         { sel: '.twf_eyebrow',        at: 0.12, dur: 0.5, from: FADE,  ease: 'power2.out', stagger: 0.16 },
         { sel: '.twf_featured-title', at: 0.18, dur: 0.7, from: RISE,  ease: 'power3.out' },
         { sel: '.twf_featured-para',  at: 0.30, dur: 0.8, split: true, ease: 'power3.out', lineSpread: 0.45 },
@@ -95,7 +102,8 @@
       ]},
       { host: '.twf_cards', steps: [
         { sel: '.twf_card',        at: 0,    dur: 0.6, from: NUDGE, ease: 'power2.out', stagger: 0.2 },
-        { sel: '.twf_card-media',  at: 0.10, dur: 0.7, from: ZOOM,  ease: 'power2.out', stagger: 0.2 },
+        { sel: '.twf_card-media',  at: 0.10, dur: 0.7, from: FADE,  ease: 'power2.out', stagger: 0.2 },
+        { sel: '.twf_card-img',    at: 0.10, dur: 0.7, from: ZOOMI, ease: 'power2.out', stagger: 0.2 },
         { sel: '.twf_eyebrow',     at: 0.22, dur: 0.5, from: FADE,  ease: 'power2.out', stagger: 0.16 },
         { sel: '.twf_card-title',  at: 0.26, dur: 0.6, from: RISE,  ease: 'power3.out', stagger: 0.16 },
         { sel: '.twf_card-desc',   at: 0.34, dur: 0.6, from: NUDGE, ease: 'power3.out', stagger: 0.16 }
@@ -148,7 +156,8 @@
       { host: '.twfa_hero-grid', onLoad: true, steps: [
         { sel: '.twf_eyebrow',      at: 0,    dur: 0.5, from: FADE,  ease: 'power2.out' },
         { sel: '.twfa_hero-title',  at: 0.06, dur: 0.8, from: RISE,  ease: 'power3.out' },
-        { sel: '.twfa_hero-media',  at: 0.12, dur: 0.9, from: ZOOM,  ease: 'power2.out' },
+        { sel: '.twfa_hero-media',  at: 0.12, dur: 0.9, from: FADE,  ease: 'power2.out' },
+        { sel: '.twfa_hero-img',    at: 0.12, dur: 0.9, from: ZOOMI, ease: 'power2.out' },
         { sel: '.twfa_hero-body',   at: 0.22, dur: 0.7, from: RISE,  ease: 'power3.out' },
         { sel: '.twfa_hero-byline', at: 0.34, dur: 0.6, from: FADE,  ease: 'power2.out' },
         { sel: '.twfa_hero-bar',    at: 0.46, dur: 0.6, from: NUDGE, ease: 'power2.out' }
@@ -166,7 +175,8 @@
         { sel: '.twfa_num-item',    at: 0,    dur: 0.6, from: NUDGE, ease: 'power2.out', stagger: 0.24 },
         { sel: '.twfa_stat-num',    at: 0.28, dur: 0.8, from: RISE,  ease: 'power3.out' },
         { sel: '.twfa_stat-label',  at: 0.42, dur: 0.6, from: FADE,  ease: 'power2.out' },
-        { sel: '.twfa_quote-media', at: 0.08, dur: 0.9, from: ZOOM,  ease: 'power2.out' },
+        { sel: '.twfa_quote-media', at: 0.08, dur: 0.9, from: FADE,  ease: 'power2.out' },
+        { sel: '.twfa_quote-img',   at: 0.08, dur: 0.9, from: ZOOMI, ease: 'power2.out' },
         { sel: '.twfa_quote-text',  at: 0,    dur: 0.8, split: true, ease: 'power3.out', lineSpread: 0.45 },
         { sel: '.twfa_quote-name',  at: 0.34, dur: 0.6, from: FADE,  ease: 'power2.out' },
         { sel: '.twfa_cta-label',   at: 0.44, dur: 0.5, from: FADE,  ease: 'power2.out' }
@@ -190,7 +200,8 @@
         { sel: '.twf_eyebrow',     at: 0,    dur: 0.5, from: FADE,  ease: 'power2.out' },
         { sel: '.twfa_dl-title',   at: 0.06, dur: 0.7, from: RISE,  ease: 'power3.out' },
         { sel: '.twf_cta',         at: 0.20, dur: 1.0, from: { yPercent: 100, opacity: 0 }, ease: 'power3.out' },
-        { sel: '.twfa_dl-media',   at: 0.10, dur: 0.9, from: ZOOM,  ease: 'power2.out' },
+        { sel: '.twfa_dl-media',   at: 0.10, dur: 0.9, from: FADE,  ease: 'power2.out' },
+        { sel: '.twfa_dl-img',     at: 0.10, dur: 0.9, from: ZOOMI, ease: 'power2.out' },
         { sel: '.twfa_cta-label',  at: 0.28, dur: 0.5, from: FADE,  ease: 'power2.out' }
       ]},
       { host: '.twfa_rel-pair', steps: [
