@@ -456,7 +456,10 @@
   // scoped to our own wrapper, and it degrades to a plain transform if GSAP
   // is missing.
   (function ctaHover() {
-    var root = document.querySelector('.page-wrapper.is-twf-page');
+    // Both pages must match: the listing wrapper is is-twf-page, the article
+    // wrapper is is-twfa-page. Matching only the first silently skipped every
+    // CTA on the article page - the module returned before binding anything.
+    var root = document.querySelector('.page-wrapper.is-twf-page, .page-wrapper.is-twfa-page');
     if (!root) {
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', ctaHover, { once: true });
