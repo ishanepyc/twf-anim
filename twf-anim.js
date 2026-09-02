@@ -555,7 +555,7 @@
     var rot = startBlank ? 0 : (gx + gy + ci) % 3;     // otherwise vary, so neighbours differ
     for (var i = 0; i < 3; i++) {
       if (order[(i + rot) % 3]) {
-        out.push({ c: PALETTE[(ci + i * 2 + 1) % PALETTE.length].c,
+        out.push({ c: PALETTE[weightedPick(hash01(gx, gy, i + 1))].c,
                    k: FACE_KINDS[(ci + i + gx + gy) % FACE_KINDS.length] });
       } else {
         out.push({ blank: true });
@@ -566,11 +566,46 @@
 
   function isWhite(c) { return c[0] > 254.5 && c[1] > 254.5 && c[2] > 254.5; }
 
+  // EVERY colour choice goes through these. Stepping around the palette, or picking a
+  // slot uniformly, quietly flattens the artwork to equal parts of each hue - which is
+  // how a source that is 46% red and 11% violet rendered as 14% red and 25% violet
+  // after one sweep. Sampling the measured weights keeps the proportions whatever
+  // anyone does to it.
+  var WSUM = 0;
+  function weightedPick(u) {
+    var t = u * WSUM, acc = 0;
+    for (var i = 0; i < PALETTE.length; i++) {
+      acc += PALETTE[i].w;
+      if (t <= acc) return i;
+    }
+    return 0;
+  }
+
+  // Same, over the cycle that includes white. White carries the share of the band that
+  // is empty at rest, so density stays near the measured 46% however long it is played.
+  var CYCLE_W = [];
+  function cyclePick(u) {
+    var acc = 0;
+    for (var i = 0; i < CYCLE_W.length; i++) {
+      acc += CYCLE_W[i];
+      if (u <= acc) return i;
+    }
+    return CYCLE.length - 1;
+  }
+
+  // Deterministic 0..1 from three integers, so a block's sides are stable across
+  // reloads and resizes without consuming the composition's random stream.
+  function hash01(a, b, c) {
+    var h = (Math.imul(a, 374761393) + Math.imul(b, 668265263) + Math.imul(c, 1274126177)) >>> 0;
+    h = (h ^ (h >>> 13)) >>> 0;
+    h = Math.imul(h, 1274126177) >>> 0;
+    return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+  }
+
   // INTENSITY — how loud a change is. The artwork rests very pale (mean alpha 0.37,
   // much of it 0.10-0.30), so a changed square that keeps its resting alpha barely
   // reads. These four are the dials, strongest first.
   var CHANGE_GAIN = 1.9;   // a changed square becomes this much more present
-  var CYCLE_STEP  = 3;     // how far around the palette each change jumps (1 = neighbour)
   var BLANK_FLOOR = 0.30;  // a white square is only ever seen once changed - arrive solid
   var COL_EASE = 0.16;     // approach to the new colour: higher = more decisive
 
@@ -604,8 +639,13 @@
     strip.dataset.twfMosaic = '1';
 
     if (!CYCLE.length) {
-      for (var pi = 0; pi < PALETTE.length; pi++) CYCLE.push(PALETTE[pi].c);
+      for (var pi = 0; pi < PALETTE.length; pi++) WSUM += PALETTE[pi].w;
+      for (pi = 0; pi < PALETTE.length; pi++) {
+        CYCLE.push(PALETTE[pi].c);
+        CYCLE_W.push(PALETTE[pi].w / WSUM * OCCUPANCY);
+      }
       CYCLE.push(WHITE);
+      CYCLE_W.push(1 - OCCUPANCY);
     }
 
     var img = strip.querySelector('.twf_strip-img');
@@ -795,7 +835,7 @@
           if (map[slot] !== undefined) continue;
           var bnx = (bx + 0.5) / cols, bny = (by + 0.5) / rows;
           var bnear = nearness(bnx, bny);
-          var bci = Math.floor(r2() * PALETTE.length) % PALETTE.length;
+          var bci = weightedPick(r2());
           map[slot] = out.length;
           out.push({
             gx: bx, gy: by, span: 1,
@@ -884,13 +924,17 @@
             if (d2 < R2) {
               if (!q.hot) {
                 q.hot = true;
-                q.hi = (q.hi + CYCLE_STEP) % CYCLE.length;
+                var nh = cyclePick(Math.random());
+                if (nh === q.hi) nh = cyclePick(Math.random());   // make it actually change
+                q.hi = nh;
                 setTgt(q, CYCLE[q.hi]);
               }
             } else if (q.hot && d2 > R2 * HOV_EXIT) {
               q.hot = false;
               // `wash` returns the square to where it came from; `paint` keeps it.
-              if (hover === 'wash') { q.hi = (q.hi + CYCLE.length - CYCLE_STEP) % CYCLE.length; setTgt(q, CYCLE[q.hi]); }
+              // Restore where the square started rather than stepping backwards: with a
+              // sampled colour there is no arithmetic inverse to walk back along.
+              if (hover === 'wash') { q.hi = q.hi0; setTgt(q, CYCLE[q.hi0]); }
             }
             var cc = q.col, tt = q.tgt;
             cc[0] += (tt[0] - cc[0]) * COL_EASE;
