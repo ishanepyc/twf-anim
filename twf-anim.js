@@ -337,9 +337,22 @@
                 // and the column stagger read as nothing at all.
                 var each = (st.each !== undefined ? st.each : 0.24);
                 els.forEach(function (el, i) {
+                  // The CTA arrow is a flex SIBLING of the label, and the button's
+                  // column-gap is the only thing separating them. SplitText re-parents
+                  // every child into one line wrapper, so the pair becomes a single flex
+                  // item: the gap then has nothing to sit between and renders as 0, and
+                  // the arrow additionally inherits the line mask's overflow:clip.
+                  // Lift any trailing icon out, split the copy, put it back as a direct
+                  // child - two flex items again, so the authored gap applies as designed.
+                  var lifted = [];
+                  while (el.lastElementChild &&
+                         /^(img|svg)$/i.test(el.lastElementChild.tagName)) {
+                    lifted.unshift(el.removeChild(el.lastElementChild));
+                  }
                   var sp = new window.SplitText(el, {
                     type: 'lines', mask: 'lines', linesClass: 'twf_split-line'
                   });
+                  lifted.forEach(function (n) { el.appendChild(n); });
                   if (!st.also) g.set(el, { opacity: 1 });   // block step owns opacity when `also`
                   tl.fromTo(sp.lines,
                     { yPercent: 100 },
