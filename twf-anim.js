@@ -123,8 +123,8 @@
         // Right column waits for the left. '>' rather than a number, because the left
         // copy is split text: its length depends on how many lines it wraps to and on
         // SPREAD, so no fixed position would stay correct.
-        { sel: '.twf_about-intro', at: '>-=0.30', dur: 0.7, from: RISE,  ease: 'power3.out' },
-        { sel: '.twf_about-item',  at: '>-=0.45', dur: 0.6, from: NUDGE, ease: 'power2.out', stagger: 0.18 }
+        { sel: '.twf_about-intro', at: '>-=0.85', dur: 0.55, from: RISE,  ease: 'power3.out' },
+        { sel: '.twf_about-item',  at: '>-=1.00', dur: 0.5, from: NUDGE, ease: 'power2.out', stagger: 0.10 }
       ]},
       { host: '.twf_framework', steps: [
         { sel: '.twf_library-head .twf_eyebrow', at: 0, dur: 0.5, from: FADE, ease: 'power2.out' },
@@ -164,7 +164,6 @@
       ]},
       { host: '.twfa_two-col', steps: [
         { sel: '.twf_eyebrow',     at: 0,    dur: 0.5, from: FADE,  ease: 'power2.out' },
-        { sel: '.twfa_head',       at: 0.06, dur: 0.7, from: RISE,  ease: 'power3.out' },
         { sel: '.twf_library-title', at: 0.12, dur: 0.7, from: RISE, ease: 'power3.out' },
         { sel: '.twf_framework-body', at: 0.22, dur: 0.8, split: true, ease: 'power3.out', lineSpread: 0.45 },
         { sel: '.twfa_cta-label',  at: 0.18, dur: 0.5, from: FADE,  ease: 'power2.out' },
@@ -190,7 +189,6 @@
       ]},
       { host: '.twfa_fw-pair', steps: [
         { sel: '.twf_eyebrow',        at: 0,    dur: 0.5, from: FADE,  ease: 'power2.out' },
-        { sel: '.twfa_fw-head',       at: 0.06, dur: 0.7, from: RISE,  ease: 'power3.out' },
         { sel: '.twf_library-title',  at: 0.12, dur: 0.7, from: RISE,  ease: 'power3.out' },
         { sel: '.twfa_th',            at: 0.14, dur: 0.5, from: FADE,  ease: 'power2.out', stagger: 0.16 },
         { sel: '.twfa_trows .twfa_trow', at: 0.20, dur: 0.6, from: NUDGE, ease: 'power2.out', perItem: true },
