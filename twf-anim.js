@@ -173,7 +173,7 @@
       ]},
       { host: '.twfa_split', steps: [
         { sel: '.twfa_num-item',    at: 0,    dur: 0.6, from: NUDGE, ease: 'power2.out', stagger: 0.24 },
-        { sel: '.twfa_stat-num',    at: 0.28, dur: 0.8, from: RISE,  ease: 'power3.out' },
+        { sel: '.twfa_stat-num',    at: 0.28, dur: 1.4, count: true, ease: 'power2.out' },
         { sel: '.twfa_stat-label',  at: 0.42, dur: 0.6, from: FADE,  ease: 'power2.out' },
         { sel: '.twfa_quote-media', at: 0.08, dur: 0.9, from: FADE,  ease: 'power2.out' },
         { sel: '.twfa_quote-img',   at: 0.08, dur: 0.9, from: ZOOMI, ease: 'power2.out' },
